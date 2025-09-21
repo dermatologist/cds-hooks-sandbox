@@ -21,6 +21,7 @@ import CardList from '../CardList/card-list';
 import PatientBanner from '../PatientBanner/patient-banner';
 import styles from './rx-view.css';
 import { createFhirResource } from '../../reducers/medication-reducers';
+import { createFhirCommunicationResource } from '../../reducers/communication-reducers';
 
 import {
   storeUserMedInput, storeUserChosenMedication,
@@ -35,14 +36,26 @@ cdsExecution.registerTriggerHandler('rx-view/order-select', {
   onMessage: () => { },
   generateContext: (state) => {
     const { fhirVersion } = state.fhirServerState;
-    const resource = createFhirResource(fhirVersion, state.patientState.currentPatient.id, state.medicationState, state.patientState.currentPatient.conditionsResources);
+    const resource = createFhirResource(
+      fhirVersion,
+      state.patientState.currentPatient.id,
+      state.medicationState,
+      state.patientState.currentPatient.conditionsResources
+    );
+    const communicationResource = createFhirCommunicationResource(
+      state.patientState.currentPatient.id,
+      state.communicationState
+    );
     const selection = `${resource.resourceType}/${resource.id}`;
 
     return {
       selections: [selection],
       draftOrders: {
         resourceType: 'Bundle',
-        entry: [{ resource }],
+        entry: [
+          { resource },
+          { resource: communicationResource },
+        ],
       },
     };
   },
