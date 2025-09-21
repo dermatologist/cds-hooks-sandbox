@@ -9,6 +9,7 @@ import serviceExchangeReducers from './service-exchange-reducers';
 import cardDemoReducers from './card-demo-reducers';
 import pamaReducers from './pama-reducers';
 import { medicationReducers } from './medication-reducers';
+import { communicationReducers } from './communication-reducers';
 
 const reducers = combineReducers({
   fhirServerState: fhirServerReducers,
@@ -18,6 +19,7 @@ const reducers = combineReducers({
   serviceExchangeState: serviceExchangeReducers,
   cardDemoState: cardDemoReducers,
   medicationState: medicationReducers,
+  communicationState: communicationReducers,
   pama: pamaReducers,
 });
 

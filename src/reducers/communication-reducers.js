@@ -74,6 +74,14 @@ const communicationReducers = (state = initialState, action) => {
       };
     }
 
+    // Store message via dedicated communication action
+    case types.STORE_COMMUNICATION_MESSAGE: {
+      return {
+        ...state,
+        message: action.message,
+      };
+    }
+
     // Store the priority
     case types.STORE_MED_DOSAGE_AMOUNT: {
       return {

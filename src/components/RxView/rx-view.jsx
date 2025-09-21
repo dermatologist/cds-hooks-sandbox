@@ -29,6 +29,7 @@ import {
   storeMedDosageAmount, storeDate, toggleDate,
   takeSuggestion,
 } from '../../actions/medication-select-actions';
+import { storeCommunicationMessage } from '../../actions/communication-actions';
 
 cdsExecution.registerTriggerHandler('rx-view/order-select', {
   needExplicitTrigger: false,
@@ -118,6 +119,14 @@ const propTypes = {
    * Function callback to take a specific suggestion from a card
    */
   takeSuggestion: PropTypes.func.isRequired,
+  /**
+   * The free-form communication message bound to CommunicationRequest.payload[0].contentString
+   */
+  communicationMessage: PropTypes.string,
+  /**
+   * Dispatch function to store the communication message (5s debounced)
+   */
+  setCommunicationMessage: PropTypes.func.isRequired,
 };
 
 /**
@@ -163,6 +172,10 @@ export class RxView extends Component {
         enabled: true,
         value: undefined,
       },
+      /**
+       * Free-form communication message for CommunicationRequest.payload[0].contentString
+       */
+      communicationMessage: '',
     };
 
     this.changeMedicationInput = this.changeMedicationInput.bind(this);
@@ -172,6 +185,13 @@ export class RxView extends Component {
     this.selectStartDate = this.selectStartDate.bind(this);
     this.selectEndDate = this.selectEndDate.bind(this);
     this.toggleEnabledDate = this.toggleEnabledDate.bind(this);
+    this.onCommunicationChange = this.onCommunicationChange.bind(this);
+    this.flushDebouncedComm = this.flushDebouncedComm.bind(this);
+
+    // 5s debounced submit for communication message
+    this.debouncedSubmitComm = debounce((message) => {
+      this.props.setCommunicationMessage(message);
+    }, 5000);
   }
 
   /**
@@ -195,6 +215,7 @@ export class RxView extends Component {
           // enabled: nextProps.endRange.enabled,
           value: nextProps.prescriptionDates.end.value,
         },
+        communicationMessage: nextProps.communicationMessage || '',
       });
     }
     return null;
@@ -254,6 +275,23 @@ export class RxView extends Component {
   toggleEnabledDate(event, range) {
     this.setState({ [`${range}Range`]: event.target.value });
     this.props.toggleEnabledDate(range);
+  }
+
+  onCommunicationChange(event) {
+    const message = event.target.value;
+    this.setState({ communicationMessage: message });
+    this.debouncedSubmitComm(message);
+  }
+
+  flushDebouncedComm() {
+    // Force flush pending debounce when unmounting
+    if (this.debouncedSubmitComm && this.state.communicationMessage) {
+      this.props.setCommunicationMessage(this.state.communicationMessage);
+    }
+  }
+
+  componentWillUnmount() {
+    this.flushDebouncedComm();
   }
 
   /**
@@ -364,6 +402,18 @@ export class RxView extends Component {
             </Field>
           </div>
         </form>
+        <Field
+          label="Communication message"
+          help="This free-form note maps to CommunicationRequest.payload[0].contentString and auto-saves after 5s of inactivity."
+        >
+          <textarea
+            name="communication-message"
+            value={this.state.communicationMessage}
+            onChange={this.onCommunicationChange}
+            rows={3}
+            style={{ width: '100%', padding: '0.5rem' }}
+          />
+        </Field>
         <CardList takeSuggestion={this.props.takeSuggestion} />
       </div>
     );
@@ -380,6 +430,7 @@ const mapStateToProps = (state) => ({
   medicationInstructions: state.medicationState.medicationInstructions,
   prescriptionDates: state.medicationState.prescriptionDates,
   selectedConditionCode: state.medicationState.selectedConditionCode,
+  communicationMessage: state.communicationState.message,
 });
 
 const mapDispatchToProps = (dispatch) => (
@@ -404,6 +455,9 @@ const mapDispatchToProps = (dispatch) => (
     },
     takeSuggestion: (suggestion) => {
       dispatch(takeSuggestion(suggestion));
+    },
+    setCommunicationMessage: (message) => {
+      dispatch(storeCommunicationMessage(message));
     },
   }
 );
