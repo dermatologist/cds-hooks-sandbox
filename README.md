@@ -10,9 +10,9 @@ Try out the live tool at [https://sandbox.cds-hooks.org](https://sandbox.cds-hoo
 - Added a new textbox for order-select hook for conversation input to elixir.
 
 ### How to use
-- See setup and run it section below.
-- Setup and start the DHTI stack.
-- Use cds-service discovery URL (Example): http://localhost:8001/langserve/dhti_elixir_template/cds-services
+- See setup and run it section below. TL;DR: `npm install && npm run dev`
+- Setup and start the DHTI stack. TL;DR: [demo script](https://github.com/dermatologist/dhti/blob/develop/demo.sh)
+- Go to http://localhost:8080/, click on gear icon, Add CDS Service,  and use cds-service discovery URL (Example): http://localhost:8001/langserve/dhti_elixir_schat/cds-services
 
 ## How it Works
 
