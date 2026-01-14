@@ -6,13 +6,13 @@ describe('Patient Reducers', () => {
 
   beforeEach(() => {
     state = {
-      defaultPatientId: 'smart-1288992',
+      defaultPatientId: '48596990',
       defaultUser: 'Practitioner/COREPRACTITIONER1',
       currentUser: '',
       currentPatient: {
-        id: 'smart-1288992',
-        name: 'Daniel X. Adams',
-        birthDate: '1925-12-23',
+        id: '48596990',
+        name: 'Karla',
+        birthDate: '1980-01-02',
         patientResource: {},
         conditionsResources: [],
       },

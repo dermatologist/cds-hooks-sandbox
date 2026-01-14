@@ -59,7 +59,7 @@ const config = {
     mainFields: ['browser', 'main'],
     fallback: {
       "path": false,
-    } 
+    }
   },
   resolveLoader: {
     modules: [path.resolve(path.join(processPath, 'node_modules'))],
@@ -89,7 +89,11 @@ const config = {
           },
           {
             loader: 'sass-loader',
-            options: {},
+            options: {
+              sassOptions: {
+                outputStyle: 'expanded',
+              },
+            },
           }
           ],
       },
@@ -132,20 +136,25 @@ const config = {
       ignoreOrder: false, // Enable to remove warnings about conflicting order
     }),
     */
-    new CopyWebpackPlugin([
-      {
-        from: '*.html',
-      },
-      {
-        from: './fhir-client.min.js',
-      },
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: '*.html' },
+        { from: './fhir-client.min.js' },
+      ]
+    }),
     new webpack.DefinePlugin({
       'runtime.FHIR_URL': JSON.stringify(process.env.FHIR_URL || 'https://api.hspconsortium.org/cdshooksdstu2/open')
     }),
     new webpack.ProvidePlugin({
       process: 'process/browser.js',
     }),
+  ],
+  ignoreWarnings: [
+    /Deprecation.*legacy JS API/i,
+    /Deprecation Warning on line/i,
+    /@import.*deprecated/i,
+    /Global built-in functions are deprecated/i,
+    /Module Warning.*sass-loader/i,
   ],
   stats: {
     errorDetails: true,

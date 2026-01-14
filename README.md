@@ -8,11 +8,44 @@ Try out the live tool at [https://sandbox.cds-hooks.org](https://sandbox.cds-hoo
 
 ### Changes
 - Added a new textbox for order-select hook for conversation input to elixir.
+- Added `npm run dhti` script for launching with pre-configured settings.
 
 ### How to use
 - See setup and run it section below. TL;DR: `npm install && npm run dev`
 - Setup and start the DHTI stack. TL;DR: [demo script](https://github.com/dermatologist/dhti/blob/develop/demo.sh)
 - Go to http://localhost:8080/, click on gear icon, Add CDS Service,  and use cds-service discovery URL (Example): http://localhost:8001/langserve/dhti_elixir_schat/cds-services
+
+### Quick Launch with DHTI Script
+For convenience, you can launch the sandbox with pre-configured settings using the `dhti` script:
+
+```bash
+yarn install
+yarn dhti <discoveryUrl> <fhirUrl> <patientId>
+```
+
+**Example:**
+```bash
+yarn dhti http://localhost:8001/langserve/dhti_elixir_schat/cds-services https://api.hspconsortium.org/cdshooksdstu2/open SMART-1288992
+```
+
+Or run the dev server :
+
+```bash
+
+yarn dev
+```
+
+And send the URL encoded parameters directly in the browser: Example: http://localhost:8080/?serviceDiscoveryURL=http%3A%2F%2Flocalhost%3A8001%2Fcds-services&fhirServiceUrl=https%3A%2F%2Fhapi.fhir.org%2FbaseR4
+
+This command will:
+1. Start the webpack development server
+2. Automatically open your browser
+3. Pre-configure the Discovery endpoint URL, FHIR endpoint, and patient ID
+
+**Parameters:**
+- `discoveryUrl`: The CDS Services discovery endpoint URL (e.g., http://localhost:8001/cds-services)
+- `fhirUrl`: The FHIR server endpoint URL (e.g., https://api.hspconsortium.org/cdshooksdstu2/open)
+- `patientId`: The ID of the patient in context (e.g., SMART-1288992)
 
 ## How it Works
 

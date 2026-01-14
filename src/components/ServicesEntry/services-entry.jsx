@@ -127,7 +127,7 @@ export class ServicesEntry extends Component {
               formFieldLabel="Enter discovery endpoint url"
               shouldDisplayError={this.state.shouldDisplayError}
               errorMessage={this.state.errorMessage}
-              placeholderText="https://example-services.com/cds-services"
+              placeholderText="http://localhost:8001/langserve/dhti_elixir_schat/cds-services"
               inputOnChange={this.handleChange}
               inputName="discovery-endpoint-input"
             />
