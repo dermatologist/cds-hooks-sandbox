@@ -41,6 +41,7 @@ describe('Patient Retrieval', () => {
   });
 
   afterEach(() => {
+    localStorage.clear();
     mockAxios.reset();
     mockStore.clearActions();
     jest.resetModules();
@@ -92,7 +93,7 @@ describe('Patient Retrieval', () => {
         expect(spy).toHaveBeenCalledWith(expectedPatient);
         spy.mockReset();
         spy.mockRestore();
-      }); 
+      });
     });
 
     it('resolves and dispatches a success action with passed in patient despite access token patient being set', () => {
@@ -140,6 +141,47 @@ describe('Patient Retrieval', () => {
           spy.mockReset();
           spy.mockRestore();
         });
+      });
+    });
+
+    it('fetches the first patient id from the FHIR server when none is provided', () => {
+      const firstPatientId = 'first-patient-id';
+      const storeWithoutPatient = {
+        fhirServerState: {
+          currentFhirServer: fhirServer,
+        },
+        patientState: {
+          defaultPatientId: undefined,
+        },
+      };
+
+      setMocksAndTestFunction(storeWithoutPatient);
+
+      const queryString = require('query-string');
+      queryString.parse.mockReturnValue({});
+
+      mockAxios.onGet(`${fhirServer}/Patient?_count=1`).reply(200, {
+        resourceType: 'Bundle',
+        entry: [
+          {
+            resource: {
+              resourceType: 'Patient',
+              id: firstPatientId,
+            },
+          },
+        ],
+      });
+
+      expectedPatient.id = firstPatientId;
+
+      mockAxios.onGet(`${fhirServer}/Patient/${firstPatientId}`).reply(200, expectedPatient);
+      mockAxios.onGet(`${fhirServer}/Condition?patient=${firstPatientId}`).reply(200, expectedConditions);
+      const spy = jest.spyOn(actions, 'signalSuccessPatientRetrieval');
+
+      return retrievePatient().then(() => {
+        expect(spy).toHaveBeenCalledWith(expectedPatient, expectedConditions);
+        spy.mockReset();
+        spy.mockRestore();
       });
     });
 

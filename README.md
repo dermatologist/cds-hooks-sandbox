@@ -19,13 +19,23 @@ Try out the live tool at [https://sandbox.cds-hooks.org](https://sandbox.cds-hoo
 For convenience, you can launch the sandbox with pre-configured settings using the `dhti` script:
 
 ```bash
-npm run dhti <discoveryUrl> <fhirUrl> <patientId>
+yarn install
+yarn dhti <discoveryUrl> <fhirUrl> <patientId>
 ```
 
 **Example:**
 ```bash
-npm run dhti http://localhost:8001/langserve/dhti_elixir_schat/cds-services https://api.hspconsortium.org/cdshooksdstu2/open SMART-1288992
+yarn dhti http://localhost:8001/langserve/dhti_elixir_schat/cds-services https://api.hspconsortium.org/cdshooksdstu2/open SMART-1288992
 ```
+
+Or run the dev server :
+
+```bash
+
+yarn dev
+```
+
+And send the URL encoded parameters directly in the browser: Example: http://localhost:8080/?serviceDiscoveryURL=http%3A%2F%2Flocalhost%3A8001%2Fcds-services&fhirServiceUrl=https%3A%2F%2Fhapi.fhir.org%2FbaseR4
 
 This command will:
 1. Start the webpack development server

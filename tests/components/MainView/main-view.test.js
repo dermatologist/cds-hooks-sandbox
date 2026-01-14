@@ -33,7 +33,7 @@ describe('MainView component', () => {
     wrapper = shallow(<ConnectedMainView store={mockStore} />);
     pureComponent = wrapper.find('MainView');
   }
- 
+
   beforeEach(() => {
     storeState = {
       hookState: {
@@ -77,32 +77,28 @@ describe('MainView component', () => {
     setup(storeState);
     Promise.resolve(pureComponent.shallow()).then(() => {
       expect(mockPromiseFhirCall).toHaveBeenCalled();
-      done();  
+      done();
     });
   });
 
-  it('opens a fhir server entry prompt if fhir server call failed', async (done) => {
+  it('opens a fhir server entry prompt if fhir server call failed', async () => {
     mockPromiseSmartCall = jest.fn(() => Promise.reject(0));
     mockPromiseFhirCall = jest.fn(() => Promise.reject({
       response: { status: 401 },
     }));
     setup(storeState);
     let shallowedComponent = await pureComponent.shallow();
-    Promise.resolve(shallowedComponent).then(() => {
-      expect(shallowedComponent.state('fhirServerPrompt')).toEqual(true);
-      expect(shallowedComponent.state('fhirServerIntialResponse')).not.toEqual('');
-      done();
-    });
+    await Promise.resolve(shallowedComponent);
+    expect(shallowedComponent.state('fhirServerPrompt')).toEqual(true);
+    expect(shallowedComponent.state('fhirServerIntialResponse')).not.toEqual('');
   });
 
-  it('opens a patient entry modal if patient fetching failed', async (done) => {
+  it('opens a patient entry modal if patient fetching failed', async () => {
     mockPromisePatientCall = jest.fn(() => Promise.reject(0));
     setup(storeState);
     let shallowedComponent = await pureComponent.shallow();
-    Promise.resolve( await shallowedComponent).then(async () => {
-      await expect(shallowedComponent.state('patientPrompt')).toEqual(true);
-      done();
-    });
+    await Promise.resolve(await shallowedComponent);
+    expect(shallowedComponent.state('patientPrompt')).toEqual(true);
   });
 
   it('renders the med prescribe view if hook is not patient view', () => {
@@ -143,15 +139,13 @@ describe('MainView component', () => {
       expect(mockStore.getActions()[1]).toEqual(setHook('patient-view', 'patient-view'));
     });
 
-    it('tries to discover any CDS Services from local storage', async (done) => {
+    it('tries to discover any CDS Services from local storage', async () => {
       const persistedServices = ['http://persisted.com/cds-services'];
       localStorage.setItem('PERSISTED_cdsServices', JSON.stringify(persistedServices));
       setup(storeState);
       const shallowedComponent = await pureComponent.shallow();
-      Promise.resolve(await shallowedComponent).then(async () => {
-        expect(await mockPromiseDiscoveryCall).toHaveBeenCalledWith(persistedServices[0]);
-        done();
-      });
+      await Promise.resolve(await shallowedComponent);
+      expect(await mockPromiseDiscoveryCall).toHaveBeenCalledWith(persistedServices[0]);
     });
   });
 
@@ -176,17 +170,15 @@ describe('MainView component', () => {
       expect(mockStore.getActions()[1]).toEqual(setHook('order-select', 'rx-view'));
     });
 
-    it('calls the discovery endpoints of service discovery URLs in query parameters', async (done) => {
+    it('calls the discovery endpoints of service discovery URLs in query parameters', async () => {
       jsdom.reconfigure({
         url: 'http://example.com/?serviceDiscoveryURL=https://service-1.com/cds-services,foo.com/cds-services',
       });
       setup(storeState);
       const shallowedComponent = await pureComponent.shallow();
-      Promise.resolve(await shallowedComponent).then(async () => {
-        expect(await mockPromiseDiscoveryCall).toHaveBeenCalledWith('https://service-1.com/cds-services');
-        expect(await mockPromiseDiscoveryCall).toHaveBeenCalledWith('http://foo.com/cds-services');
-        done();
-      });
+      await Promise.resolve(await shallowedComponent);
+      expect(await mockPromiseDiscoveryCall).toHaveBeenCalledWith('https://service-1.com/cds-services');
+      expect(await mockPromiseDiscoveryCall).toHaveBeenCalledWith('http://foo.com/cds-services');
     });
   });
 });

@@ -30,7 +30,6 @@
   ],
   "dependencies": {
     "@babel/cli": "^7.17.10",
-    "@cerner/webpack-config-terra": "^4.0.0",
     "@uiw/react-codemirror": "4.11.4",
     "acorn": "^8.11.3",
     "axios": "^0.21.1",
@@ -41,7 +40,6 @@
     "debounce": "^1.2.0",
     "debounce-promise": "^3.1.2",
     "fast-deep-equal": "^2.0.1",
-    "fibers": "^5.0.3",
     "html-webpack-plugin": "^5.6.0",
     "identity-obj-proxy": "^3.0.0",
     "immer": "^3.2.0",
@@ -89,58 +87,65 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.7",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-async-to-generator": "^7.5.0",
-    "@babel/plugin-transform-spread": "^7.2.2",
-    "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-react": "^7.0.0",
-    "autoprefixer": "^9.6.1",
-    "babel-eslint": "^10.0.3",
-    "babel-jest": "^24.9.0",
-    "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^4.6.0",
+    "@babel/core": "^7.24.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
+    "@babel/plugin-transform-async-to-generator": "^7.24.0",
+    "@babel/plugin-transform-spread": "^7.24.0",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-react": "^7.24.0",
+    "autoprefixer": "^10.4.19",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^29.7.0",
+    "babel-loader": "^9.1.3",
+    "copy-webpack-plugin": "^11.0.0",
     "core-js": "^3.37.1",
-    "css-loader": "^5.0.1",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
-    "eslint": "^6.2.2",
-    "eslint-config-airbnb": "^18.0.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.14.3",
-    "eslint-plugin-react-hooks": "^1.7.0",
+    "css-loader": "^6.11.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.7",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "express": "^4.19.2",
-    "file-loader": "^6.0.0",
-    "jest": "^24.9.0",
-    "jest-environment-jsdom": "^24.9.0",
-    "jest-environment-jsdom-global": "^1.0.3",
-    "mini-css-extract-plugin": "^1.6.1",
-    "node-sass": "^4.12.0",
-    "postcss": "^8.1.0",
-    "postcss-custom-properties": "^11.0.0",
-    "postcss-loader": "^4.2.0",
-    "raw-loader": "^4.0.1",
-    "react-test-renderer": "^16.3.1",
-    "redux-mock-store": "^1.4.0",
-    "sass-loader": "^10.5.2",
-    "style-loader": "^2.0.0",
+    "file-loader": "^6.2.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-jsdom-global": "^4.0.0",
+    "mini-css-extract-plugin": "^2.7.6",
+    "sass": "^1.71.1",
+    "postcss": "^8.4.38",
+    "postcss-custom-properties": "^13.3.5",
+    "postcss-loader": "^7.3.4",
+    "raw-loader": "^4.0.2",
+    "react-test-renderer": "^16.13.1",
+    "redux-mock-store": "^1.5.4",
+    "sass-loader": "^13.3.3",
+    "style-loader": "^3.3.4",
     "terser-webpack-plugin": "^5.3.10",
-    "webpack": "^5.0.3",
+    "webpack": "^5.90.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.15.2",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^5.10.0"
   },
   "jest": {
     "testURL": "https://cds-client.org",
+    "testEnvironmentOptions": {
+      "url": "https://cds-client.org"
+    },
     "setupFiles": [
       "./tests/jest-setup.js"
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|svg|pem)$": "<rootDir>/src/assets/__mocks__/fileMock.js",
-      "\\.(css|scss)$": "identity-obj-proxy"
+      "\\.(css|scss)$": "identity-obj-proxy",
+      "cheerio/lib/utils": "<rootDir>/tests/cheerio-shim.js"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(cheerio|domhandler|domelementtype|domutils|entities|nth-check|parse5|parse5-htmlparser2-tree-adapter|boolbase)/)"
+    ],
     "coveragePathIgnorePatterns": [
       "/jest-setup.js",
       "/store.js"
@@ -156,5 +161,6 @@
       "last 1 chrome version",
       "last 1 firefox version"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
