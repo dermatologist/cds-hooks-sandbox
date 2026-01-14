@@ -41,11 +41,11 @@ cdsExecution.registerTriggerHandler('rx-view/order-select', {
       fhirVersion,
       state.patientState.currentPatient.id,
       state.medicationState,
-      state.patientState.currentPatient.conditionsResources
+      state.patientState.currentPatient.conditionsResources,
     );
     const communicationResource = createFhirCommunicationResource(
       state.patientState.currentPatient.id,
-      state.communicationState
+      state.communicationState,
     );
     const selection = `${resource.resourceType}/${resource.id}`;
 

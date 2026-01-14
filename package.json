@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node scripts/express/app.js",
     "dev": "webpack-dev-server --config webpack.config.dev.js",
+    "dhti": "node scripts/dhti-launch.js",
     "compile:heroku": "webpack --config webpack.config.prod.js --progress",
     "build": "webpack --config webpack.config.prod.js --progress",
     "heroku-postbuild": "npm install --only=dev && npm run compile:heroku",
