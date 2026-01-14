@@ -93,7 +93,7 @@ function main() {
 
   // Construct the URL with query parameters
   const port = process.env.PORT || 8080;
-  const queryParams = `serviceDiscoveryURL=${encodedDiscoveryUrl}&fhirServiceUrl=${encodedFhirUrl}&patientId=${validatedPatientId}`;
+  const queryParams = `serviceDiscoveryURL=${encodedDiscoveryUrl}&fhirServiceUrl=${encodedFhirUrl}&patientId=${encodeURIComponent(validatedPatientId)}`;
 
   console.log('Starting CDS Hooks Sandbox with DHTI configuration...');
   console.log(`Discovery URL: ${discoveryUrl}`);
@@ -102,7 +102,7 @@ function main() {
   console.log(`\nThe application will be available at: http://localhost:${port}`);
   console.log(`With query parameters: ${queryParams}\n`);
 
-    // Construct the target URL for webpack-dev-server to open
+  // Construct the target URL for webpack-dev-server to open
   const openTarget = `/?${queryParams}`;
   
   // Start webpack-dev-server with --open and --open-target flags
