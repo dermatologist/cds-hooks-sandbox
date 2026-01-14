@@ -104,7 +104,7 @@ function main() {
 
   // Construct the target URL for webpack-dev-server to open
   const openTarget = `/?${queryParams}`;
-  
+
   // Start webpack-dev-server with --open and --open-target flags
   const webpackDevServer = spawn('npx', [
     'webpack-dev-server',
