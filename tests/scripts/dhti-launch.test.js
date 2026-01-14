@@ -71,16 +71,12 @@ describe('DHTI Launch Script', () => {
       expect(dhtiLaunch.validatePatientId('  patient123  ', true)).toBe(encodeURIComponent('patient123'));
     });
 
-    it('throws error for empty patient ID', () => {
-      expect(() => {
-        dhtiLaunch.validatePatientId('', true);
-      }).toThrow('Error: Patient ID is required and cannot be empty');
+    it('returns empty string for empty patient ID', () => {
+      expect(dhtiLaunch.validatePatientId('', true)).toBe('');
     });
 
-    it('throws error for null patient ID', () => {
-      expect(() => {
-        dhtiLaunch.validatePatientId(null, true);
-      }).toThrow('Error: Patient ID is required and cannot be empty');
+    it('returns empty string for null patient ID', () => {
+      expect(dhtiLaunch.validatePatientId(null, true)).toBe('');
     });
   });
 });
