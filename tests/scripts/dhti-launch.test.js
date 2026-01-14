@@ -62,13 +62,13 @@ describe('DHTI Launch Script', () => {
   });
 
   describe('validatePatientId', () => {
-    it('returns patient ID for valid input', () => {
-      expect(dhtiLaunch.validatePatientId('patient123', true)).toBe('patient123');
-      expect(dhtiLaunch.validatePatientId('SMART-1288992', true)).toBe('SMART-1288992');
+    it('returns encoded patient ID for valid input', () => {
+      expect(dhtiLaunch.validatePatientId('patient123', true)).toBe(encodeURIComponent('patient123'));
+      expect(dhtiLaunch.validatePatientId('SMART-1288992', true)).toBe(encodeURIComponent('SMART-1288992'));
     });
 
-    it('trims whitespace from patient ID', () => {
-      expect(dhtiLaunch.validatePatientId('  patient123  ', true)).toBe('patient123');
+    it('trims whitespace and encodes patient ID', () => {
+      expect(dhtiLaunch.validatePatientId('  patient123  ', true)).toBe(encodeURIComponent('patient123'));
     });
 
     it('throws error for empty patient ID', () => {

@@ -53,7 +53,7 @@ function validateAndEncodeUrl(url, paramName, throwError = false) {
  * Validate patient ID
  * @param {string} patientId - The patient ID to validate
  * @param {boolean} throwError - If true, throw error instead of exiting (for testing)
- * @returns {string} - The validated patient ID
+ * @returns {string} - The validated and encoded patient ID
  */
 function validatePatientId(patientId, throwError = false) {
   if (!isValidArgument(patientId)) {
@@ -65,7 +65,8 @@ function validatePatientId(patientId, throwError = false) {
     process.exit(1);
   }
 
-  return patientId.trim();
+  // Encode the patient ID for query parameter
+  return encodeURIComponent(patientId.trim());
 }
 
 /**
@@ -89,11 +90,11 @@ function main() {
   // Validate and encode arguments
   const encodedDiscoveryUrl = validateAndEncodeUrl(discoveryUrl, 'Discovery URL');
   const encodedFhirUrl = validateAndEncodeUrl(fhirUrl, 'FHIR URL');
-  const validatedPatientId = validatePatientId(patientId);
+  const encodedPatientId = validatePatientId(patientId);
 
   // Construct the URL with query parameters
   const port = process.env.PORT || 8080;
-  const queryParams = `serviceDiscoveryURL=${encodedDiscoveryUrl}&fhirServiceUrl=${encodedFhirUrl}&patientId=${encodeURIComponent(validatedPatientId)}`;
+  const queryParams = `serviceDiscoveryURL=${encodedDiscoveryUrl}&fhirServiceUrl=${encodedFhirUrl}&patientId=${encodedPatientId}`;
 
   console.log('Starting CDS Hooks Sandbox with DHTI configuration...');
   console.log(`Discovery URL: ${discoveryUrl}`);
