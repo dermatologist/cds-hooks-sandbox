@@ -330,7 +330,7 @@ class CommunicationMessage extends Component {
             value={text}
             onChange={this.handleTextChange}
             rows={3}
-            placeholder="Enter a message (optional)"
+            placeholder="Question (image above is optional)"
             className={styles.textarea}
           />
         </div>
