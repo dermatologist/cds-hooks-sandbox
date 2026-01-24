@@ -19,6 +19,7 @@ import debounce from 'debounce';
 import cdsExecution from '../../middleware/cds-execution';
 import CardList from '../CardList/card-list';
 import PatientBanner from '../PatientBanner/patient-banner';
+import CommunicationMessage from '../CommunicationMessage/communication-message';
 import styles from './rx-view.css';
 import { createFhirResource } from '../../reducers/medication-reducers';
 import { createFhirCommunicationResource } from '../../reducers/communication-reducers';
@@ -402,18 +403,10 @@ export class RxView extends Component {
             </Field>
           </div>
         </form>
-        <Field
-          label="Communication message"
-          help="This free-form note maps to CommunicationRequest.payload[0].contentString and auto-saves after 5s of inactivity."
-        >
-          <textarea
-            name="communication-message"
-            value={this.state.communicationMessage}
-            onChange={this.onCommunicationChange}
-            rows={3}
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
-        </Field>
+        <CommunicationMessage
+          value={this.state.communicationMessage}
+          onChange={this.onCommunicationChange}
+        />
         <CardList takeSuggestion={this.props.takeSuggestion} />
       </div>
     );

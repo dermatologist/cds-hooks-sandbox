@@ -9,6 +9,7 @@ Try out the live tool at [https://sandbox.cds-hooks.org](https://sandbox.cds-hoo
 ### Changes
 - Added a new textbox for order-select hook for conversation input to elixir.
 - Added `npm run dhti` script for launching with pre-configured settings.
+- **Added image upload feature to CommunicationMessage component** - Users can now attach images (PNG, JPEG, GIF, WebP) to communication messages via drag-and-drop or file picker. Images are converted to base64 and sent as JSON along with text content. See [Image Upload Feature](#image-upload-feature) for details.
 
 ### How to use
 - See setup and run it section below. TL;DR: `npm install && npm run dev`
@@ -95,6 +96,58 @@ While users have the option to configure properties of the Sandbox in-app like t
 Now, users can construct a link that has their preferred properties configured on launch instead of manually inputting them in-app, and can use the link every time to launch their configured Sandbox (does not include SMART-launched Sandbox method). See below for an example URL.
 
 > https://sandbox.cds-hooks.org/?hook=order-select&prescribedMedication=731370&prescribedReason=1201005&prescribedInstructionNumber=2&prescribedInstructionFrequency=daily
+
+
+## Image Upload Feature
+
+The CommunicationMessage component in the Rx View now supports image uploads in addition to text messages. This feature allows healthcare providers to attach relevant medical images, charts, or other visual information to their communication requests.
+
+### How to Use
+
+1. **Navigate to Rx View**: Click on the "Rx View" tab in the header to access the order-select workflow.
+2. **Locate the Communication Message Section**: Scroll down to the "Communication message" field at the bottom of the form.
+3. **Upload an Image**: You can upload an image in two ways:
+   - **Drag and Drop**: Drag an image file from your computer and drop it into the designated drop zone.
+   - **File Picker**: Click the "Choose File" button to open a file picker dialog and select an image from your device.
+4. **Preview**: Once uploaded, a thumbnail preview of the image will be displayed.
+5. **Add Text (Optional)**: You can add text alongside the image in the text area below the preview.
+6. **Remove Image**: Click the "Remove" button if you want to remove the selected image.
+
+### Supported Formats
+
+- PNG (image/png)
+- JPEG (image/jpeg, image/jpg)
+- GIF (image/gif)
+- WebP (image/webp)
+
+### File Size Limit
+
+The maximum file size is **5MB**. Attempting to upload a larger file will display an error message.
+
+### Technical Details
+
+When an image is uploaded:
+- The image is converted to a base64-encoded data URI string
+- The message payload is structured as JSON:
+  ```json
+  {
+    "image_url": "data:image/png;base64,...",
+    "text": "Optional text message"
+  }
+  ```
+- This JSON is stringified and stored in `CommunicationRequest.payload[0].contentString`
+- If no image is selected, the component behaves as before, storing plain text
+
+### Error Handling
+
+The component provides user-friendly error messages for:
+- Unsupported file types
+- Files exceeding the size limit
+- File reading errors
+
+### Auto-Save
+
+Like text-only messages, the communication message (with or without an image) is auto-saved after 5 seconds of inactivity.
 
 
 ## Testing w/ Secured FHIR Servers
