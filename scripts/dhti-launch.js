@@ -19,6 +19,8 @@
  */
 
 const { spawn } = require('child_process');
+const http = require('http');
+const https = require('https');
 
 /**
  * Validate that a string is a non-empty value
@@ -66,23 +68,88 @@ function validatePatientId(patientId, throwError = false) {
 }
 
 /**
+ * Fetch the first patient ID from a FHIR server
+ * @param {string} fhirUrl - The FHIR server URL
+ * @returns {Promise<string>} - The first patient ID or empty string
+ */
+async function fetchFirstPatientId(fhirUrl) {
+  return new Promise((resolve) => {
+    try {
+      const url = new URL(`${fhirUrl}/Patient?_count=1`);
+      const protocol = url.protocol === 'https:' ? https : http;
+
+      const request = protocol.get(url, (res) => {
+        let data = '';
+
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        res.on('end', () => {
+          try {
+            const response = JSON.parse(data);
+            const entries = response.entry || [];
+            if (entries.length > 0 && entries[0].resource && entries[0].resource.id) {
+              resolve(entries[0].resource.id);
+            } else {
+              resolve('');
+            }
+          } catch (e) {
+            resolve('');
+          }
+        });
+      });
+
+      request.on('error', () => {
+        resolve('');
+      });
+
+      request.setTimeout(5000, () => {
+        request.destroy();
+        resolve('');
+      });
+    } catch (e) {
+      resolve('');
+    }
+  });
+}
+
+/**
  * Main function to launch the application
  */
-function main() {
+async function main() {
+  // Default URLs
+  const defaultDiscoveryUrl = 'http://localhost:8001/langserve/dhti-elixir-schat/cds-services';
+  const defaultFhirUrl = 'https://hapi.fhir.org/baseR4';
+
   // Get command line arguments (skip node and script name)
   const args = process.argv.slice(2);
 
-  // Check if we have at least 2 arguments (discoveryUrl, fhirUrl)
-  if (args.length < 2 || args.length > 3) {
-    console.error('Error: 2 required arguments, 1 optional\n');
-    console.log('Usage: npm run dhti <discoveryUrl> <fhirUrl> [patientId]');
-    console.log('\nExamples:');
-    console.log('  npm run dhti http://localhost:8001/cds-services https://api.example.org/fhir patient123');
-    console.log('  npm run dhti http://localhost:8001/cds-services https://api.example.org/fhir');
-    process.exit(1);
+  // Use defaults or provided arguments
+  let discoveryUrl = defaultDiscoveryUrl;
+  let fhirUrl = defaultFhirUrl;
+  let patientId = '';
+
+  if (args.length > 0) {
+    discoveryUrl = args[0];
+  }
+  if (args.length > 1) {
+    fhirUrl = args[1];
+  }
+  if (args.length > 2) {
+    patientId = args[2];
   }
 
-  const [discoveryUrl, fhirUrl, patientId] = args;
+  // If no patient ID provided, fetch the first one from FHIR server
+  if (!patientId) {
+    console.log('Fetching first patient ID from FHIR server...');
+    patientId = await fetchFirstPatientId(fhirUrl);
+    if (patientId) {
+      console.log(`Found patient ID: ${patientId}`);
+    } else {
+      console.log('No patient ID found, will use patient selection UI');
+    }
+  }
 
   // Validate and encode arguments
   const encodedDiscoveryUrl = validateAndEncodeUrl(discoveryUrl, 'Discovery URL');
@@ -105,10 +172,58 @@ function main() {
   } else {
     console.log('Patient ID: (not provided)');
   }
-  console.log(`\nApplication URL: ${fullUrl}\n`);
 
-  // Only display the launch URL, do not open the browser or start the dev server
-  // (No further action required)
+  // Display Application URL in red
+  console.log('\n\x1b[31mApplication URL: %s\x1b[0m\n', fullUrl);
+
+  // Start the dev server with a spinning wheel
+  startDevServer();
+}
+
+/**
+ * Start the development server with a spinning wheel animation
+ */
+function startDevServer() {
+  const spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+  let spinnerIndex = 0;
+
+  console.log('Starting development server...');
+  console.log('Press Ctrl+C twice to exit\n');
+
+  const spinnerInterval = setInterval(() => {
+    process.stdout.write(`\r${spinner[spinnerIndex]} Starting...`);
+    spinnerIndex = (spinnerIndex + 1) % spinner.length;
+  }, 100);
+
+  // Spawn the yarn dev process
+  const devProcess = spawn('yarn', ['dev'], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false
+  });
+
+  // Clear the spinner when process starts
+  devProcess.stdout.on('data', () => {
+    clearInterval(spinnerInterval);
+    process.stdout.write('\r\n');
+  });
+
+  devProcess.stderr.on('data', () => {
+    clearInterval(spinnerInterval);
+    process.stdout.write('\r\n');
+  });
+
+  // Handle process exit
+  devProcess.on('close', (code) => {
+    clearInterval(spinnerInterval);
+    process.exit(code);
+  });
+
+  // Handle Ctrl+C
+  process.on('SIGINT', () => {
+    clearInterval(spinnerInterval);
+    console.log('\n\nShutting down...');
+    devProcess.kill('SIGINT');
+  });
 }
 
 // Export for testing
