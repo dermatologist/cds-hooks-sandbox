@@ -156,13 +156,16 @@ async function main() {
   const encodedFhirUrl = validateAndEncodeUrl(fhirUrl, 'FHIR URL');
   const encodedPatientId = validatePatientId(patientId);
 
-  // Construct the URL with query parameters
+  // Determine hostname and port for the dev server
+  const hostname = process.env.HOST || 'localhost';
   const port = process.env.PORT || 8080;
+
+  // Construct the URL with query parameters
   let queryParams = `serviceDiscoveryURL=${encodedDiscoveryUrl}&fhirServiceUrl=${encodedFhirUrl}`;
   if (encodedPatientId) {
     queryParams += `&patientId=${encodedPatientId}`;
   }
-  const fullUrl = `http://localhost:${port}/?${queryParams}`;
+  const fullUrl = `http://${hostname}:${port}/?${queryParams}`;
 
   console.log('Starting CDS Hooks Sandbox with DHTI configuration...');
   console.log(`Discovery URL: ${discoveryUrl}`);
@@ -172,6 +175,7 @@ async function main() {
   } else {
     console.log('Patient ID: (not provided)');
   }
+  console.log(`Dev Server: ${hostname}:${port}`);
 
   // Display Application URL in red
   console.log('\n\x1b[31mApplication URL: %s\x1b[0m\n', fullUrl);
@@ -222,7 +226,17 @@ function startDevServer() {
   process.on('SIGINT', () => {
     clearInterval(spinnerInterval);
     console.log('\n\nShutting down...');
-    devProcess.kill('SIGINT');
+    if (devProcess && !devProcess.killed) {
+      devProcess.kill('SIGTERM');
+      // Force kill after 3 seconds if process doesn't exit gracefully
+      setTimeout(() => {
+        if (!devProcess.killed) {
+          console.log('Force killing process...');
+          devProcess.kill('SIGKILL');
+        }
+      }, 3000);
+    }
+    process.exit(0);
   });
 }
 
